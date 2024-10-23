@@ -1,8 +1,9 @@
 AUTHOR = 'Matt Bramlage'
 SITENAME = 'Stytch Getting Started'
-SITEURL = ""
+SITEURL = "https://praecipula.github.io/Stytch-interview/"
 
 PATH = "content"
+OUTPUT_PATH = "docs"
 
 TIMEZONE = 'America/Los_Angeles'
 
@@ -28,3 +29,4 @@ DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
 # RELATIVE_URLS = True
+
