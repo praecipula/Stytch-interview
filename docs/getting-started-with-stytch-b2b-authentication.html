@@ -57,7 +57,8 @@
 by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/matt-bramlage.html">Matt Bramlage </a>
  in <a href="https://praecipula.github.io/Stytch-interview/category/take-home.html">Take home</a>
 </div>
-		<div><h1>Getting Started: Python</h1>
+		<div><p>[Click <a href="https://praecipula.github.io/Stytch-interview/background-reasoning-behind-quickstart-guide.html">this link</a> to go to the behind-the-scenes thinking for this article]</p>
+<h1>Getting Started: Python</h1>
 <h2>Overview:</h2>
 <p>In this guide we will invite a user via an email address to an existing <a href="https://stytch.com/docs/b2b/api/organization-object">Organization</a>. This flow will create a new <a href="https://stytch.com/docs/b2b/api/member-object">Member</a> using Stytch's API and a <a href="https://stytch.com/docs/api/send-by-email">Magic Link</a>, log this Member in, and store this Member's login credentials in the browser's session. This will simulate a common method for sending a user-friendly, passwordless, and secure invitation for a user to join and log into an Organization.</p>
 <p>Check out these resources for more background information about Stytch's <a href="https://stytch.com/docs/b2b/guides/multi-tenancy">data model</a> and <a href="https://stytch.com/docs/b2b/guides/magic-links/overview">Magic Links</a> if you'd like more information about the techniques used in this guide.</p>
@@ -79,13 +80,13 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 </ul>
 <h2>Implementation:</h2>
 <h4>Install Stytch SDK and configure your API Keys</h4>
-<p>✅ Create a Stytch B2B Project in your <a href="https://stytch.com/dashboard">Stytch Dashboard</a>. At this stage it is sufficient to make your test organization permissive by supplying the required "name" and "slug" fields and using the defaults for the other configuration fields. In production, Stytch strongly recommends modifying your <a href="https://stytch.com/docs/b2b/guides/multi-tenancy#organization-settings">organization's settings</a> to configure security to your set of expected authorization flows, but that's an exercise for another time.</p>
+<p>✅ Create a Stytch B2B Project in your <a href="https://stytch.com/dashboard">Stytch Dashboard</a>. At this stage it is sufficient to make your test organization permissive by supplying the required "name" and "slug" fields and using the defaults for the other configuration fields. In production, Stytch strongly recommends modifying your <a href="https://stytch.com/docs/b2b/guides/multi-tenancy#organization-settings">organization's settings</a> to configure security to your set of expected authorization flows.</p>
 <p>✅ Install our Python SDK in your Flask environment:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>stytch
 </code></pre></div>
 
 <p>✅ Collect your Stytch Project's API keys to use in our guide.</p>
-<p>These are located in your project details <a href="https://stytch.com/dashboard/project-settings?env=test">configuration dashboard</a>. We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment. (As a reminder, these should be considered secret and we highly encourage you not to share or hard-code them):</p>
+<p>These are located in your project settings <a href="https://stytch.com/dashboard/project-settings?env=test">configuration</a>. We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment by, for example, setting them as environment variables. (As a reminder, these should be considered secret and we highly encourage you not to share or hard-code them):</p>
 <div class="highlight"><pre><span></span><code><span class="nv">STYTCH_PROJECT_ID</span><span class="o">=</span><span class="s2">&quot;YOUR_STYTCH_PROJECT_ID&quot;</span>
 <span class="nv">STYTCH_SECRET</span><span class="o">=</span><span class="s2">&quot;YOUR_STYTCH_PROJECT_SECRET&quot;</span>
 </code></pre></div>
@@ -111,7 +112,6 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 <span class="w">  </span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
-<p>At this point it should be possible to run the app without errors, although it doesn't do much yet.</p>
 <p>✅ Let's start with a simple dashboard that allows us to see the state of whether we are logged in with some simple HTML. THis will help us keep track of our app's state.</p>
 <p>For now, this will simply show we're not logged in. After a successful authentication flow, this route will try to fetch a stored token from our Flask session data, authenticate it with Stytch, and print whether the user is authenticated in an organization:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/dashboard&#39;</span><span class="p">)</span>
@@ -128,7 +128,7 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Try to authenticate with the token we fetched from the session</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">session_token</span><span class="o">=</span><span class="n">stytch_session</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">session_token</span><span class="o">=</span><span class="n">stytch_session</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">StytchError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="c1"># If there is an error (such as server-expired authentication or session error), clear the session.</span>
         <span class="c1"># This will have the effect of needing to fully re-log-in again.</span>
@@ -138,14 +138,14 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
     <span class="c1"># If we reach here we have successfully logged in based on data stored in our session.</span>
 
     <span class="c1"># Remember to reset the cookie session on authenticate, as this will issue a new token.</span>
-    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;stytch_session_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">session_token</span>
+    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;stytch_session_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">session_token</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        &lt;p&gt;&lt;em&gt;</span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">email_address</span><span class="si">}</span><span class="s2">&lt;/em&gt; is currently logged into </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">organization</span><span class="o">.</span><span class="n">organization_name</span><span class="si">}</span><span class="s2">.&lt;p&gt;</span>
+<span class="s2">        &lt;p&gt;&lt;em&gt;</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">email_address</span><span class="si">}</span><span class="s2">&lt;/em&gt; is currently logged into </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">organization</span><span class="o">.</span><span class="n">organization_name</span><span class="si">}</span><span class="s2">.&lt;p&gt;</span>
 <span class="s2">        &lt;p&gt;&lt;a href=&quot;/signup&quot;&gt;Submit another email&lt;/a&gt; to log in.&lt;/p&gt;</span>
 <span class="s2">        &quot;&quot;&quot;</span>
 </code></pre></div>
 
-<p>✅ While we're at it, let's implement a <code>logout</code> function by adding a simple route to delete the session token. Visiting this logout endpoint will discard the logged-in session state:</p>
+<p>✅ While we're at it, let's implement a logout function by adding a simple route to delete the session token. Visiting this logout endpoint will discard the logged-in session state:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -158,19 +158,19 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 <span class="s2">        &quot;&quot;&quot;</span>
 </code></pre></div>
 
-<p>Now that we have some helper functions to inspect and manage our app's state, it's time to implement the magic link flow.</p>
-<p>As a reminder, magic links with discovery flow work like this:</p>
+<p>Now that we have some helper functions to inspect and manage our app's state, it's time to implement the Magic Link flow.</p>
+<p>Magic Links with Discovery Authentication flow work like this:</p>
 <ol>
-<li>We request a magic link from Stytch to be sent to a given email address.</li>
-<li>On receipt of this email, the user clicks the log in button, indicating their intent to log in. Their browser briefly visits Stytch to proceed with the server side of the flow.</li>
-<li>Stytch responds with a redirect to our app with some data. Our app takes a token from the url parameters and begins a token exchange process with Stytch.</li>
-<li>Using the Stytch discovery flow, we process the log in request to create an intermediate session for the user, fetching a list of Organizations for which the user can log in.</li>
+<li>We make a request for Stytch to send a Magic Link to a given email address.</li>
+<li>On receipt of this email, the user clicks the login button. Their browser very briefly visits Stytch to continue the server side of the flow.</li>
+<li>Stytch responds with a redirect to our app with some url parameters. Our app takes a token from the parameters and begins a token exchange process with Stytch.</li>
+<li>Using the Stytch Discovery Authentication flow, we process the login request to create an intermediate session for the user, fetching a list of Organizations for which the user can log in.</li>
 <li>Based on app business logic or user input, we select one of these organizations. We exchange the selected organization and the intermediate session token for a full session.</li>
 </ol>
 <p>The user is now logged in to the given Organization.</p>
 <p>Let's proceed with implementing this flow.</p>
-<p>✅ We use a very basic no-frills form to capture the email address:</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/signup&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<p>✅ We use a basic no-frills form to capture the email address:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/signup&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">sign_up</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Render a simple form for the user to start the signup/login flow in their browser</span>
@@ -189,29 +189,26 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 <span class="k">def</span> <span class="nf">request_magic_link</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start the magic link flow.</span>
-<span class="sd">    Here we are using the discovery flow to log the user in; later we will check what organizations</span>
-<span class="sd">    are available for them to log into.</span>
 <span class="sd">    This method is the target of the POST request sent by submitting the form on the `/signup` page.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">email</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">magic_links</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">discovery</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">magic_links</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">discovery</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
                 <span class="n">email_address</span><span class="o">=</span><span class="n">email</span>
                 <span class="p">)</span>
-        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">is_success</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">is_success</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">            &lt;h1&gt;Success!&lt;/h1&gt;</span>
 <span class="s2">            &lt;p&gt;You should soon receive an email request to log in at </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&lt;/p&gt;</span>
-<span class="s2">            &lt;p&gt;More info: response: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="si">}</span><span class="s2">&lt;/p&gt;</span>
 <span class="s2">            &quot;&quot;&quot;</span>
     <span class="k">except</span> <span class="n">StytchError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">details</span><span class="p">))</span>
 </code></pre></div>
 
-<p>Upon success of this route, Stytch will send an email to the user asking them to log in.</p>
-<p>Some short time later, when the user clicks the link, Stytch will continue the flow and return to our app for the next steps.</p>
-<p>✅ Here our app will exchange the token to create the intermediate session, which informs us which Organizations are available for the user. For now, we simply choose the first one and perfom another exchange request with the intermediate token and our selected organization to create our session:</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/authenticate&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<p>At this point Stytch will proceed to send an email to the user asking them to log in.</p>
+<p>Some short time later, when the user clicks the login link, Stytch will continue the flow and make a callback request to our app at a prearranged route (configurable in the <a href="https://stytch.com/dashboard/redirect-urls?env=test">Dashboard</a>) for the next steps. This request will include some more data from Stytch, including a token for creating our sessions.</p>
+<p>✅ Our app will exchange the token to create the <a href="https://stytch.com/docs/b2b/api/exchange-intermediate-session">Intermediate Session</a>, which indicates that the user is logged in but not yet associated with an Organization. This step also supplies which Organizations are available for users to join. For simplicity, we will simply choose the first one, and perfom another exchange request with the Intermediate Session token and our selected organization to create our fully logged in <a href="https://stytch.com/docs/b2b/api/session-object">Member Session</a>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/authenticate&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">authenticate</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the Stytch-default route to redirect the user&#39;s browser to after Stytch validates and </span>
@@ -236,10 +233,10 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">details</span><span class="p">))</span>
 
     <span class="c1"># Sessions are based on Memberships, but we don&#39;t yet know which organization to choose</span>
-    <span class="c1"># for this user. The intermediate session token is valid for the half-session of only the</span>
-    <span class="c1"># user data model that we have so far.</span>
-    <span class="n">ist</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">intermediate_session_token</span>
-    <span class="n">discovered_orgs</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">discovered_organizations</span>
+    <span class="c1"># for this user. The intermediate session token is valid for the half-session (User is known, but not Organization)</span>
+    <span class="c1"># that we have so far.</span>
+    <span class="n">ist</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">intermediate_session_token</span>
+    <span class="n">discovered_orgs</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">discovered_organizations</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">discovered_orgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
       <span class="c1"># email belongs to &gt;= 1 organization, simply log into the first one for this example.</span>
       <span class="c1"># It may be more elegant, for users who belong in multiple Organizations, to display a choice to the</span>
@@ -258,15 +255,16 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 <span class="s2">        &quot;&quot;&quot;</span>
 
     <span class="c1"># We made it to having a succesful response. Store the returned token in our session data.</span>
-    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;stytch_session_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">session_token</span>
+    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;stytch_session_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">session_token</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    &lt;h1&gt;Success!&lt;/h1&gt;</span>
-<span class="s2">    &lt;p&gt;You are logged in as </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">email_address</span><span class="si">}</span><span class="s2">&gt;&lt;/p&gt;</span>
+<span class="s2">    &lt;p&gt;You are logged in as </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">email_address</span><span class="si">}</span><span class="s2">&lt;/p&gt;</span>
 <span class="s2">    &lt;a href=&#39;/dashboard&#39;&gt;Go to dashboard&lt;/a&gt;</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 </code></pre></div>
 
-<p>If these steps are successful, we have completed the log in process. Going to our dashboard route should now show our status as logged in.</p>
+<p>If these steps are successful, we have completed the log in process. Going to our <a href="http://localhost:3000/dashboard">dashboard</a> route should now show our status as logged in.</p>
+<p>Congratuatons, you have implemented a basic signup flow with Stytch Magic Links!</p>
 <h2>Next steps:</h2>
 <p>Keep in mind that this example app uses some shortcuts, is built for a test environment, and only programs defensively for a few basic errors. For more information how to extend this example, review the rest of Stytch's documents and follow best practices for configuring and maintaining the security of your application.</p>
 <p>Some possible next steps with this app could be:</p>
@@ -274,8 +272,9 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 <li>Configure the Organization settings to tighten security (for instance, by whitelisting only certain email domains for the Organization).</li>
 <li>When a user has access to multiple Organizations, present a webpage with options for user to choose which organization to log into.</li>
 <li>Adjust your redirect URL to point to a web server that clients can access over the Internet (instead of localhost).</li>
-<li>Use Stytch's Discovery flow and intermediate session to dynamically create new Organizations on demand.</li>
-</ul></div>
+<li>Use Stytch's Discovery Authentication flow and intermediate session to dynamically create new Organizations on demand.</li>
+</ul>
+<p><a href="https://github.com/praecipula/Stytch-interview/blob/main/stytch_app_testing/app.py">Download the complete example app here</a></p></div>
 	</div>
 		<footer>
 		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>

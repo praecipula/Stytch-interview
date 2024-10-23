@@ -2,6 +2,8 @@ Title: Getting Started with Stytch B2B Authentication
 Date: 2024-10-23
 Category: Take home
 
+[Click [this link](https://praecipula.github.io/Stytch-interview/background-reasoning-behind-quickstart-guide.html) to go to the behind-the-scenes thinking for this article]
+
 # Getting Started: Python
 
 ## Overview:
@@ -32,7 +34,7 @@ By the end of this quickstart, you will have learned how to:
 
 #### Install Stytch SDK and configure your API Keys
 
-✅ Create a Stytch B2B Project in your [Stytch Dashboard](https://stytch.com/dashboard). At this stage it is sufficient to make your test organization permissive by supplying the required "name" and "slug" fields and using the defaults for the other configuration fields. In production, Stytch strongly recommends modifying your [organization's settings](https://stytch.com/docs/b2b/guides/multi-tenancy#organization-settings) to configure security to your set of expected authorization flows, but that's an exercise for another time.
+✅ Create a Stytch B2B Project in your [Stytch Dashboard](https://stytch.com/dashboard). At this stage it is sufficient to make your test organization permissive by supplying the required "name" and "slug" fields and using the defaults for the other configuration fields. In production, Stytch strongly recommends modifying your [organization's settings](https://stytch.com/docs/b2b/guides/multi-tenancy#organization-settings) to configure security to your set of expected authorization flows.
 
 
 ✅ Install our Python SDK in your Flask environment:
@@ -43,7 +45,7 @@ pip install stytch
 
 ✅ Collect your Stytch Project's API keys to use in our guide.
 
-These are located in your project details [configuration dashboard](https://stytch.com/dashboard/project-settings?env=test). We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment. (As a reminder, these should be considered secret and we highly encourage you not to share or hard-code them):
+These are located in your project settings [configuration](https://stytch.com/dashboard/project-settings?env=test). We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment by, for example, setting them as environment variables. (As a reminder, these should be considered secret and we highly encourage you not to share or hard-code them):
 
 ```bash
 
@@ -76,8 +78,6 @@ if __name__ == '__main__':
   app.run(debug=True)
 ```
 
-At this point it should be possible to run the app without errors, although it doesn't do much yet.
-
 ✅ Let's start with a simple dashboard that allows us to see the state of whether we are logged in with some simple HTML. THis will help us keep track of our app's state.
 
 For now, this will simply show we're not logged in. After a successful authentication flow, this route will try to fetch a stored token from our Flask session data, authenticate it with Stytch, and print whether the user is authenticated in an organization:
@@ -97,7 +97,7 @@ def dashboard():
 
     try:
         # Try to authenticate with the token we fetched from the session
-        resp = stytch_client.sessions.authenticate(session_token=stytch_session)
+        response = stytch_client.sessions.authenticate(session_token=stytch_session)
     except StytchError as e:
         # If there is an error (such as server-expired authentication or session error), clear the session.
         # This will have the effect of needing to fully re-log-in again.
@@ -107,14 +107,14 @@ def dashboard():
     # If we reach here we have successfully logged in based on data stored in our session.
 
     # Remember to reset the cookie session on authenticate, as this will issue a new token.
-    session['stytch_session_token'] = resp.session_token
+    session['stytch_session_token'] = response.session_token
     return f"""
-        <p><em>{resp.member.email_address}</em> is currently logged into {resp.organization.organization_name}.<p>
+        <p><em>{response.member.email_address}</em> is currently logged into {response.organization.organization_name}.<p>
         <p><a href="/signup">Submit another email</a> to log in.</p>
         """
 ```
 
-✅ While we're at it, let's implement a `logout` function by adding a simple route to delete the session token. Visiting this logout endpoint will discard the logged-in session state:
+✅ While we're at it, let's implement a logout function by adding a simple route to delete the session token. Visiting this logout endpoint will discard the logged-in session state:
 
 ```python
 @app.route('/logout')
@@ -127,27 +127,26 @@ def logout():
     return """<p>Logged out.</p>
         <p><a href="/signup">Submit another email</a> to log in.</p>
         """
-
 ```
 
-Now that we have some helper functions to inspect and manage our app's state, it's time to implement the magic link flow.
+Now that we have some helper functions to inspect and manage our app's state, it's time to implement the Magic Link flow.
 
-As a reminder, magic links with discovery flow work like this:
+Magic Links with Discovery Authentication flow work like this:
 
-1. We request a magic link from Stytch to be sent to a given email address.
-2. On receipt of this email, the user clicks the log in button, indicating their intent to log in. Their browser briefly visits Stytch to proceed with the server side of the flow.
-3. Stytch responds with a redirect to our app with some data. Our app takes a token from the url parameters and begins a token exchange process with Stytch.
-4. Using the Stytch discovery flow, we process the log in request to create an intermediate session for the user, fetching a list of Organizations for which the user can log in.
+1. We make a request for Stytch to send a Magic Link to a given email address.
+2. On receipt of this email, the user clicks the login button. Their browser very briefly visits Stytch to continue the server side of the flow.
+3. Stytch responds with a redirect to our app with some url parameters. Our app takes a token from the parameters and begins a token exchange process with Stytch.
+4. Using the Stytch Discovery Authentication flow, we process the login request to create an intermediate session for the user, fetching a list of Organizations for which the user can log in.
 5. Based on app business logic or user input, we select one of these organizations. We exchange the selected organization and the intermediate session token for a full session.
 
 The user is now logged in to the given Organization.
 
 Let's proceed with implementing this flow.
 
-✅ We use a very basic no-frills form to capture the email address:
+✅ We use a basic no-frills form to capture the email address:
 
 ```python
-@app.route('/signup', methods=['GET'])
+@app.route('/signup')
 def sign_up():
     """
     Render a simple form for the user to start the signup/login flow in their browser
@@ -168,33 +167,30 @@ def sign_up():
 def request_magic_link():
     """
     Start the magic link flow.
-    Here we are using the discovery flow to log the user in; later we will check what organizations
-    are available for them to log into.
     This method is the target of the POST request sent by submitting the form on the `/signup` page.
     """
     email = request.form['email']
     try:
-        resp = stytch_client.magic_links.email.discovery.send(
+        response = stytch_client.magic_links.email.discovery.send(
                 email_address=email
                 )
-        if resp.is_success:
+        if response.is_success:
             return f"""
             <h1>Success!</h1>
             <p>You should soon receive an email request to log in at {email}</p>
-            <p>More info: response: {resp.json()}</p>
             """
     except StytchError as e:
         return jsonify(dict(e.details))
 
 ```
-Upon success of this route, Stytch will send an email to the user asking them to log in.
+At this point Stytch will proceed to send an email to the user asking them to log in.
 
-Some short time later, when the user clicks the link, Stytch will continue the flow and return to our app for the next steps.
+Some short time later, when the user clicks the login link, Stytch will continue the flow and make a callback request to our app at a prearranged route (configurable in the [Dashboard](https://stytch.com/dashboard/redirect-urls?env=test)) for the next steps. This request will include some more data from Stytch, including a token for creating our sessions.
 
-✅ Here our app will exchange the token to create the intermediate session, which informs us which Organizations are available for the user. For now, we simply choose the first one and perfom another exchange request with the intermediate token and our selected organization to create our session:
+✅ Our app will exchange the token to create the [Intermediate Session](https://stytch.com/docs/b2b/api/exchange-intermediate-session), which indicates that the user is logged in but not yet associated with an Organization. This step also supplies which Organizations are available for users to join. For simplicity, we will simply choose the first one, and perfom another exchange request with the Intermediate Session token and our selected organization to create our fully logged in [Member Session](https://stytch.com/docs/b2b/api/session-object):
 
 ```python
-@app.route('/authenticate', methods=['GET'])
+@app.route('/authenticate')
 def authenticate():
     """
     This is the Stytch-default route to redirect the user's browser to after Stytch validates and 
@@ -219,10 +215,10 @@ def authenticate():
         return jsonify(dict(e.details))
 
     # Sessions are based on Memberships, but we don't yet know which organization to choose
-    # for this user. The intermediate session token is valid for the half-session of only the
-    # user data model that we have so far.
-    ist = resp.intermediate_session_token
-    discovered_orgs = resp.discovered_organizations
+    # for this user. The intermediate session token is valid for the half-session (User is known, but not Organization)
+    # that we have so far.
+    ist = response.intermediate_session_token
+    discovered_orgs = response.discovered_organizations
     if len(discovered_orgs) > 0:
       # email belongs to >= 1 organization, simply log into the first one for this example.
       # It may be more elegant, for users who belong in multiple Organizations, to display a choice to the
@@ -241,16 +237,17 @@ def authenticate():
         """
 
     # We made it to having a succesful response. Store the returned token in our session data.
-    session['stytch_session_token'] = resp.session_token
+    session['stytch_session_token'] = response.session_token
     return f"""
     <h1>Success!</h1>
-    <p>You are logged in as {resp.member.email_address}></p>
+    <p>You are logged in as {response.member.email_address}</p>
     <a href='/dashboard'>Go to dashboard</a>
     """
-
 ```
 
-If these steps are successful, we have completed the log in process. Going to our dashboard route should now show our status as logged in.
+If these steps are successful, we have completed the log in process. Going to our [dashboard](http://localhost:3000/dashboard) route should now show our status as logged in.
+
+Congratuatons, you have implemented a basic signup flow with Stytch Magic Links!
 
 
 ## Next steps:
@@ -262,5 +259,6 @@ Some possible next steps with this app could be:
 * Configure the Organization settings to tighten security (for instance, by whitelisting only certain email domains for the Organization).
 * When a user has access to multiple Organizations, present a webpage with options for user to choose which organization to log into.
 * Adjust your redirect URL to point to a web server that clients can access over the Internet (instead of localhost).
-* Use Stytch's Discovery flow and intermediate session to dynamically create new Organizations on demand.
+* Use Stytch's Discovery Authentication flow and intermediate session to dynamically create new Organizations on demand.
 
+[Download the complete example app here](https://github.com/praecipula/Stytch-interview/blob/main/stytch_app_testing/app.py)

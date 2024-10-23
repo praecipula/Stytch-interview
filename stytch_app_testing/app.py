@@ -6,7 +6,7 @@ from stytch.core.response_base import StytchError
 import os 
 
 app = Flask(__name__)
-# Flask requests a secret key for session signing.
+# Flask requests a secret key for encrypting session data.
 # As this is not production code, we'll use a random value.
 app.secret_key="1234567890abcdef"
 
@@ -14,9 +14,9 @@ stytch_client = B2BClient(
         project_id=os.environ['STYTCH_PROJECT_ID'],
         secret=os.environ['STYTCH_SECRET'],
         environment="test"
-        )
+        )  
 
-@app.route('/signup', methods=['GET'])
+@app.route('/signup')
 def sign_up():
     """
     Render a simple form for the user to start the signup/login flow in their browser
@@ -33,25 +33,22 @@ def sign_up():
 def request_magic_link():
     """
     Start the magic link flow.
-    Here we are using the discovery flow to log the user in; later we will check what organizations
-    are available for them to log into.
     This method is the target of the POST request sent by submitting the form on the `/signup` page.
     """
     email = request.form['email']
     try:
-        resp = stytch_client.magic_links.email.discovery.send(
+        response = stytch_client.magic_links.email.discovery.send(
                 email_address=email
                 )
-        if resp.is_success:
+        if response.is_success:
             return f"""
             <h1>Success!</h1>
             <p>You should soon receive an email request to log in at {email}</p>
-            <p>More info: response: {resp.json()}</p>
             """
     except StytchError as e:
         return jsonify(dict(e.details))
 
-@app.route('/authenticate', methods=['GET'])
+@app.route('/authenticate')
 def authenticate():
     """
     This is the Stytch-default route to redirect the user's browser to after Stytch validates and 
@@ -76,14 +73,14 @@ def authenticate():
         return jsonify(dict(e.details))
 
     # Sessions are based on Memberships, but we don't yet know which organization to choose
-    # for this user. The intermediate session token is valid for the half-session of only the
-    # user data model that we have so far.
-    ist = resp.intermediate_session_token
-    discovered_orgs = resp.discovered_organizations
+    # for this user. The intermediate session token is valid for the half-session (User is known, but not Organization)
+    # that we have so far.
+    ist = response.intermediate_session_token
+    discovered_orgs = response.discovered_organizations
     if len(discovered_orgs) > 0:
       # email belongs to >= 1 organization, simply log into the first one for this example.
       # It may be more elegant, for users who belong in multiple Organizations, to display a choice to the
-      # user to select which organization to login to.
+      # user to select which organization to log in to.
         try:
             response = stytch_client.discovery.intermediate_sessions.exchange(
                     intermediate_session_token=ist,
@@ -98,12 +95,13 @@ def authenticate():
         """
 
     # We made it to having a succesful response. Store the returned token in our session data.
-    session['stytch_session_token'] = resp.session_token
+    session['stytch_session_token'] = response.session_token
     return f"""
     <h1>Success!</h1>
-    <p>You are logged in as {resp.member.email_address}></p>
+    <p>You are logged in as {response.member.email_address}</p>
     <a href='/dashboard'>Go to dashboard</a>
     """
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -112,26 +110,26 @@ def dashboard():
     """
     stytch_session = session.get('stytch_session_token')
     if not stytch_session:
-        # We're not logged in because we unset or never set a session at all. We should run the whole login flow.
+        # We're not logged in because we unset or never set a session at all. We should run the whole log in flow.
         return f"""
             <p>No active session. Please <a href="/signup">submit an email address</a> to receive a magic link.</p>
         """
 
     try:
         # Try to authenticate with the token we fetched from the session
-        resp = stytch_client.sessions.authenticate(session_token=stytch_session)
+        response = stytch_client.sessions.authenticate(session_token=stytch_session)
     except StytchError as e:
-        # If there is an error (such as server-expired authentication or session error), clear the session variable.
-        # This will have the effect of needing to fully re-login again.
+        # If there is an error (such as server-expired authentication or session error), clear the session.
+        # This will have the effect of needing to fully re-log-in again.
         logout()
         return jsonify(dict(e.details))
 
-    # We have successfully logged in based on data stored in our session.
+    # If we reach here we have successfully logged in based on data stored in our session.
 
-    # Remember to reset the session token, as sessions.authenticate() will issue a new token on successful auth.
-    session['stytch_session_token'] = resp.session_token
+    # Remember to reset the cookie session on authenticate, as this will issue a new token.
+    session['stytch_session_token'] = response.session_token
     return f"""
-        <p><em>{resp.member.email_address}</em> is currently logged into {resp.organization.organization_name}.<p>
+        <p><em>{response.member.email_address}</em> is currently logged into {response.organization.organization_name}.<p>
         <p><a href="/signup">Submit another email</a> to log in.</p>
         """
 
@@ -141,7 +139,7 @@ def logout():
     Log out the user.
     Simply pop the session token from the session so we'll have to reauthenticate.
     """
-    session.pop("stytch_session_token", None)
+    session.pop("stytch_session_token")
     return """<p>Logged out.</p>
         <p><a href="/signup">Submit another email</a> to log in.</p>
         """
