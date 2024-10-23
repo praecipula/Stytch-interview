@@ -45,7 +45,7 @@ pip install stytch
 
 ✅ Collect your Stytch Project's API keys to use in our guide.
 
-These are located in your project settings [configuration](https://stytch.com/dashboard/project-settings?env=test). We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment by, for example, setting them as environment variables. (As a reminder, these should be considered secret and we highly encourage you not to share or hard-code them):
+These are located in your project settings [configuration](https://stytch.com/dashboard/project-settings?env=test). We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment by, for example, setting them as environment variables. (As a reminder, these should be considered secret and we highly encourage you not to share or hard code them):
 
 ```bash
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
   app.run(debug=True)
 ```
 
-✅ Let's start with a simple dashboard that allows us to see the state of whether we are logged in with some simple HTML. THis will help us keep track of our app's state.
+✅ Let's start with a simple dashboard that allows us to see the state of whether we are logged in with some simple HTML. This will help us keep track of our app's state.
 
 For now, this will simply show we're not logged in. After a successful authentication flow, this route will try to fetch a stored token from our Flask session data, authenticate it with Stytch, and print whether the user is authenticated in an organization:
 
@@ -131,7 +131,7 @@ def logout():
 
 Now that we have some helper functions to inspect and manage our app's state, it's time to implement the Magic Link flow.
 
-Magic Links with Discovery Authentication flow work like this:
+Magic Links with Discovery Authentication flow works like this:
 
 1. We make a request for Stytch to send a Magic Link to a given email address.
 2. On receipt of this email, the user clicks the login button. Their browser very briefly visits Stytch to continue the server side of the flow.
@@ -245,7 +245,7 @@ def authenticate():
     """
 ```
 
-If these steps are successful, we have completed the log in process. Going to our [dashboard](http://localhost:3000/dashboard) route should now show our status as logged in.
+If these steps are successful, we have completed the log in process. Going to our app's [dashboard](http://localhost:3000/dashboard) route should now show our status as logged in.
 
 Congratuatons, you have implemented a basic signup flow with Stytch Magic Links!
 

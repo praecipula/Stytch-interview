@@ -72,6 +72,19 @@ Non-trivial
 
 : Where I settled is that I agree with the magic login flow that Stytch currently uses for its quickstarts. It generates a good narrative for how to start at the beginning and improve the app incrementally: build a flow that represents a industry-approved signup flow, then iterate from there to make that login flow robust, then iterate more to everyday login flows for existing users like OpenID or passkeys: a series of pieces that takes people from nothing (the quickstart) through a story of a user signup to a full app built on Stytch.
 
+
+### One other thing of note
+
+In general I tend to structure guides sort of like a Powerpoint presentation:
+
+* Tell 'em what you're going to tell 'em
+* Tell 'em
+* Tell 'em what you just told 'em
+
+This is a good chance to get reference links out of the way at the beginning and to ease people in to reading actual code, and then encourage them with a call to action or choose your own adventure continuation of the reading.
+
+I'd like to point out that **the suggestions at the bottom under Next Steps** are prime examples of where to branch out from this guide into future guides; these are where we'd really start to measure the developer journey as we can tune each of these guides to a "theme" of, say, security, or multipe auth methods, or user experience, and measure with, say, Google Analytics what the popular topics are. So that's how this guide would grow into a whole series of guides!
+
 ---
 
 Anyway, I'm done with the exposition. Click [this link](https://praecipula.github.io/Stytch-interview/getting-started-with-stytch-b2b-authentication.html) to get to the article.

@@ -86,7 +86,7 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 </code></pre></div>
 
 <p>✅ Collect your Stytch Project's API keys to use in our guide.</p>
-<p>These are located in your project settings <a href="https://stytch.com/dashboard/project-settings?env=test">configuration</a>. We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment by, for example, setting them as environment variables. (As a reminder, these should be considered secret and we highly encourage you not to share or hard-code them):</p>
+<p>These are located in your project settings <a href="https://stytch.com/dashboard/project-settings?env=test">configuration</a>. We recommend using the Test configuration for your credentials (selected in the Dashboard screen's header at the top of the page). Once you have these, make them available to your development environment by, for example, setting them as environment variables. (As a reminder, these should be considered secret and we highly encourage you not to share or hard code them):</p>
 <div class="highlight"><pre><span></span><code><span class="nv">STYTCH_PROJECT_ID</span><span class="o">=</span><span class="s2">&quot;YOUR_STYTCH_PROJECT_ID&quot;</span>
 <span class="nv">STYTCH_SECRET</span><span class="o">=</span><span class="s2">&quot;YOUR_STYTCH_PROJECT_SECRET&quot;</span>
 </code></pre></div>
@@ -112,7 +112,7 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 <span class="w">  </span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
-<p>✅ Let's start with a simple dashboard that allows us to see the state of whether we are logged in with some simple HTML. THis will help us keep track of our app's state.</p>
+<p>✅ Let's start with a simple dashboard that allows us to see the state of whether we are logged in with some simple HTML. This will help us keep track of our app's state.</p>
 <p>For now, this will simply show we're not logged in. After a successful authentication flow, this route will try to fetch a stored token from our Flask session data, authenticate it with Stytch, and print whether the user is authenticated in an organization:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/dashboard&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">dashboard</span><span class="p">():</span>
@@ -159,7 +159,7 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 </code></pre></div>
 
 <p>Now that we have some helper functions to inspect and manage our app's state, it's time to implement the Magic Link flow.</p>
-<p>Magic Links with Discovery Authentication flow work like this:</p>
+<p>Magic Links with Discovery Authentication flow works like this:</p>
 <ol>
 <li>We make a request for Stytch to send a Magic Link to a given email address.</li>
 <li>On receipt of this email, the user clicks the login button. Their browser very briefly visits Stytch to continue the server side of the flow.</li>
@@ -263,7 +263,7 @@ by <a class="url fn" href="https://praecipula.github.io/Stytch-interview/author/
 <span class="s2">    &quot;&quot;&quot;</span>
 </code></pre></div>
 
-<p>If these steps are successful, we have completed the log in process. Going to our <a href="http://localhost:3000/dashboard">dashboard</a> route should now show our status as logged in.</p>
+<p>If these steps are successful, we have completed the log in process. Going to our app's <a href="http://localhost:3000/dashboard">dashboard</a> route should now show our status as logged in.</p>
 <p>Congratuatons, you have implemented a basic signup flow with Stytch Magic Links!</p>
 <h2>Next steps:</h2>
 <p>Keep in mind that this example app uses some shortcuts, is built for a test environment, and only programs defensively for a few basic errors. For more information how to extend this example, review the rest of Stytch's documents and follow best practices for configuring and maintaining the security of your application.</p>
