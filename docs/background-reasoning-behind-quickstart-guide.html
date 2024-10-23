@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Stytch Getting Started</title>
+	<meta name="description" content="">
+	<meta name="author" content="Matt Bramlage">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link href="/theme/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/local.css" rel="stylesheet">
+	<link href="/theme/pygments.css" rel="stylesheet">
+
+	<!-- Feeds -->
+
+
+
+
+</head>
+<body>
+	<div class="topbar">
+	  <div class="topbar-inner">
+		<div class="container-fluid">
+		  <a class="brand" href="/">Stytch Getting Started</a>
+			<ul class="nav">
+					<li class="active"><a href="/category/take-home.html">Take home</a></li>
+			</ul>
+			<p class="pull-right"><a href="/archives.html">[archives]</a> <a href="/tags.html">[tags]</a></p>
+		</div>
+	  </div>
+	</div>
+
+	<div class="container-fluid">
+	  <div class="sidebar">
+		<div class="well">
+			<h3>Blogroll</h3>
+			<ul>
+				<li><a href="https://stytch.com">Stytch</a></li>
+				<li><a href="https://github.com/praecipula">Github</a></li>
+			</ul>
+			<div class="social">
+			<h3>Social</h3>
+			<ul>
+			</ul>
+			</div>
+		</div>
+	  </div>
+	  <div class="content">
+	<div class='article'>
+		<div class="page-header"><h1>Background Reasoning behind Quickstart Guide</h1></div>
+		<div class="well small">Permalink: <a class="more" href="/background-reasoning-behind-quickstart-guide.html">2024-10-23 00:00:00-07:00</a>
+by <a class="url fn" href="/author/matt-bramlage.html">Matt Bramlage </a>
+ in <a href="/category/take-home.html">Take home</a>
+</div>
+		<div><h3>Meta</h3>
+<dl>
+<dt>Goal</dt>
+<dd>Motivate developers to try to make their first "does something real" request with Stytch.</dd>
+<dd>Provide context for an MVP using Stytch to help the audience when they try to scope integrations.</dd>
+<dd>Highlight some key concepts in an experiential approach to development.</dd>
+<dt>Audience</dt>
+<dd>Primary: B2B developers (more on this audience below)</dd>
+<dd>Secondary: Stytch team who are evaluating this draft for the interview take-home (naturally)</dd>
+<dt>Channel</dt>
+<dd>Github Pages / some free hosting site that allows me to author in Markdown</dd>
+<dt>Timeline</dt>
+<dd>Wednesday, Oct 33</dd>
+<dt>Stakeholders</dt>
+<dd>Individual work (no other stakeholders)</dd>
+</dl>
+<p>About B2B developers:</p>
+<p>In my experience, there is a moderate variance in the experience level of "B2B developers", but what a "B2B developer" <em>is</em> actually can vary quite a bit. It could be:</p>
+<ul>
+<li>Senior engineer who is backend-leaning or full stack (specified in the takehome) and is planning on doing the coding.</li>
+<li>Senior engineer or engineering manager who is only a stakeholder, not the implementer, and evaluating Stytch's solutions.</li>
+<li>Lesser-experienced or new-to-the-team engineer who is reading the documentation for training or pair programming purposes</li>
+<li>Engineers who aren't planning on using Stytch but just heard the name and are learning about the concept (e.g. "What is an "email magic link"? Stytch might have some more information if I can read their guide on how it works...)</li>
+<li>PMs who are similarly scoping and costing what using Stytch will be like to work with.</li>
+</ul>
+<p>All of these are team members who could be at some B2B corporation and who are looking at Stytch's documentation.</p>
+<p>This allows us to elide some things from the scope of this article, sticking to statements like "set these environment variables" and "run this Flask app" - we can assume that people who would try to do these things, the implementers, will probably know what we mean by that. </p>
+<p>However, we do have the opportunity to be more clear and a bit hand-holdy on the concepts of the app and what the code is doing even for casual readers of the guide who are using the chance to learn more about Stytch from a code-first perspective. Even though "the person building the thing" is the primary audience, the fact that these other viewers can exist informs how we crete the tone and specificity of the document.</p>
+<p>To that end, in general I'll aim for these qualities in the quickstart:</p>
+<dl>
+<dt>Clear</dt>
+<dd>I'll assume that this won't be the very first time the person reading the page has considered authentication, but I think topic-specific terms like "Email Magic Links" could use at least a little definition or reminder for those who are less familiar. The goal here is to prevent a bounce off the page or loss of focus while they look up terms. So it's worth being clear what we mean, and providing ample links to more information where relevant.</dd>
+<dt>Correct (well, at least not incorrect)</dt>
+<dd>I have a whole blog post in mind for this, but when it comes to documentation, it's more useful to be accurate than precise--that is, docs that are close enough, and get developers to the goal successfully with only the understanding of the basics, are more valuable than docs that get into the weeds and drill into every precise detail.</dd>
+<dd>There are some judgment calls to make here, especially when it comes to code, because we want to exemplify programming at least a little defensively. In general, my approach is to consider that the code might be <em>run right away</em> without the developer really reading the whole document... so there are e.g. general-purpose exception catches but also more specific messages along the lines of "You may have missed a prerequisite step at this point, go back and read the prerequisites." Enforcing this in code with a nice error message helps this type of developer stay in flow.</dd>
+<dt>Concise</dt>
+<dd>For most of the audiences, "how far do I have to scroll" is the zeroth-order metric for "how difficult will this be", so keeping the documentation concise can provide a psychological feeling of straightforwardness. In addition, documentation tends to "creep" away and get stale as the API evolves. This can be minimized by staying fairly focused on the specific documentation task at hand without trying to over-build.</dd>
+<dd>That being said: what exactly the tone and style guide would be for developer documentation is out of scope for this exercise, but in general, I am of the opinion that a narrative form where the tone feels conversational keeps the discussion from feeling business-jargony and overly shorthand, which can be a distraction to readers.</dd>
+<dt>Non-trivial</dt>
+<dd>I'm a bit torn on this one, so I would love to test this theory and/or get other opinions. My feeling is that there's an advantage if the example is not quite as simple as "log in an existing username and password" because one of the goals is to drive a small amount of "A-Ha, Stytch can do hard things quite easily" during the process of implementing the app.</dd>
+<dd>Logging in with username and password, while useful and easy to understand, doesn't highlight how Stytch is better than a language's own login-with-database libraries. There is a solid counterargument in that this leads to a slightly larger scope and showing something that is quite trivial might allow developers to focus on the "other parts" (ensuring libraries installed correctly, configuration in Stytch is correct, etc...) which would be the fastest 0-to-1 way to approach a quickstart.</dd>
+<dd>Where I settled is that I agree with the magic login flow that Stytch currently uses for its quickstarts. It generates a good narrative for how to start at the beginning and improve the app incrementally: build a flow that represents a industry-approved signup flow, then iterate from there to make that login flow robust, then iterate more to everyday login flows for existing users like OpenID or passkeys: a series of pieces that takes people from nothing (the quickstart) through a story of a user signup to a full app built on Stytch.</dd>
+</dl></div>
+	</div>
+		<footer>
+		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>
+		  <p>&copy; Matt Bramlage</p>
+		</footer>
+	  </div>
+
+	</div>
+</body>
+</html>
