@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Stytch Getting Started</title>
+	<meta name="description" content="">
+	<meta name="author" content="Matt Bramlage">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link href="/theme/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/local.css" rel="stylesheet">
+	<link href="/theme/pygments.css" rel="stylesheet">
+
+	<!-- Feeds -->
+
+
+
+
+</head>
+<body>
+	<div class="topbar">
+	  <div class="topbar-inner">
+		<div class="container-fluid">
+		  <a class="brand" href="/">Stytch Getting Started</a>
+			<ul class="nav">
+					<li class="active"><a href="/category/take-home.html">Take home</a></li>
+			</ul>
+			<p class="pull-right"><a href="/archives.html">[archives]</a> <a href="/tags.html">[tags]</a></p>
+		</div>
+	  </div>
+	</div>
+
+	<div class="container-fluid">
+	  <div class="sidebar">
+		<div class="well">
+			<h3>Blogroll</h3>
+			<ul>
+				<li><a href="https://stytch.com">Stytch</a></li>
+				<li><a href="https://github.com/praecipula">Github</a></li>
+			</ul>
+			<div class="social">
+			<h3>Social</h3>
+			<ul>
+			</ul>
+			</div>
+		</div>
+	  </div>
+	  <div class="content">
+	<div class='article'>
+		<div class="page-header"><h1>Getting Started with Stytch B2B Authentication</h1></div>
+		<div class="well small">Permalink: <a class="more" href="/getting-started-with-stytch-b2b-authentication.html">2024-10-23 00:00:00-07:00</a>
+by <a class="url fn" href="/author/matt-bramlage.html">Matt Bramlage </a>
+ in <a href="/category/take-home.html">Take home</a>
+</div>
+		<div><h3>Meta</h3>
+<dl>
+<dt>Goal</dt>
+<dd>Motivate developers to try to make their first "does something real" request with Stytch.</dd>
+<dd>Provide context for an MVP using Stytch to help the audience when they try to scope integrations.</dd>
+<dd>Highlight some key concepts in an experiential approach to development.</dd>
+<dt>Audience</dt>
+<dd>Primary: B2B developers (more on this audience below)</dd>
+<dd>Secondary: Stytch team who are evaluating this draft for the interview take-home (naturally)</dd>
+<dt>Channel</dt>
+<dd>Github Pages / some free hosting site that allows me to author in Markdown</dd>
+<dt>Timeline</dt>
+<dd>Wednesday, Oct 33</dd>
+<dt>Stakeholders</dt>
+<dd>Individual work (no other stakeholders)</dd>
+</dl>
+<p>About B2B developers:</p>
+<p>In my experience, there is a moderate variance in the experience level of "B2B developers", but what a "B2B developer" <em>is</em> actually can vary quite a bit. It could be:</p>
+<ul>
+<li>Senior engineer who is backend-leaning or full stack (specified in the takehome) and is planning on doing the coding.</li>
+<li>Senior engineer or engineering manager who is only a stakeholder, not the implementer, and evaluating Stytch's solutions.</li>
+<li>Lesser-experienced or new-to-the-team engineer who is reading the documentation for training or pair programming purposes</li>
+<li>Engineers who aren't planning on using Stytch but just heard the name and are learning about the concept (e.g. "What is an "email magic link"? Stytch might have some more information if I can read their guide on how it works...)</li>
+<li>PMs who are similarly scoping and costing what using Stytch will be like to work with.</li>
+</ul>
+<p>All of these are team members who could be at some B2B corporation and who are looking at Stytch's documentation.</p>
+<p>This allows us to elide some things from the scope of this article, sticking to statements like "set these environment variables" and "run this Flask app" - we can assume that people who would try to do these things, the implementers, will probably know what we mean by that. </p>
+<p>However, we do have the opportunity to be more clear and a bit hand-holdy on the concepts of the app and what the code is doing even for casual readers of the guide who are using the chance to learn more about Stytch from a code-first perspective. Even though "the person building the thing" is the primary audience, the fact that these other viewers can exist informs how we crete the tone and specificity of the document.</p>
+<p>To that end, in general I'll aim for these qualities in the quickstart:</p>
+<dl>
+<dt>Clear</dt>
+<dd>I'll assume that this won't be the very first time the person reading the page has considered authentication, but I think topic-specific terms like "Email Magic Links" could use at least a little definition or reminder for those who are less familiar. The goal here is to prevent a bounce off the page or loss of focus while they look up terms. So it's worth being clear what we mean, and providing ample links to more information where relevant.</dd>
+<dt>Correct (well, at least not incorrect)</dt>
+<dd>I have a whole blog post in mind for this, but when it comes to documentation, it's more useful to be accurate than precise--that is, docs that are close enough, and get developers to the goal successfully with only the understanding of the basics, are more valuable than docs that get into the weeds and drill into every precise detail.</dd>
+<dd>There are some judgment calls to make here, especially when it comes to code, because we want to exemplify programming at least a little defensively. In general, my approach is to consider that the code might be <em>run right away</em> without the developer really reading the whole document... so there are e.g. general-purpose exception catches but also more specific messages along the lines of "You may have missed a prerequisite step at this point, go back and read the prerequisites." Enforcing this in code with a nice error message helps this type of developer stay in flow.</dd>
+<dt>Concise</dt>
+<dd>For most of the audiences, "how far do I have to scroll" is the zeroth-order metric for "how difficult will this be", so keeping the documentation concise can provide a psychological feeling of straightforwardness. In addition, documentation tends to "creep" away and get stale as the API evolves. This can be minimized by staying fairly focused on the specific documentation task at hand without trying to over-build.</dd>
+<dd>That being said: what exactly the tone and style guide would be for developer documentation is out of scope for this exercise, but in general, I am of the opinion that a narrative form where the tone feels conversational keeps the discussion from feeling business-jargony and overly shorthand, which can be a distraction to readers.</dd>
+<dt>Non-trivial</dt>
+<dd>I'm a bit torn on this one, so I would love to test this theory and/or get other opinions. My feeling is that there's an advantage if the example is not quite as simple as "log in an existing username and password" because one of the goals is to drive a small amount of "A-Ha, Stytch can do hard things quite easily" during the process of implementing the app.</dd>
+<dd>Logging in with username and password, while useful and easy to understand, doesn't highlight how Stytch is better than a language's own login-with-database libraries. There is a solid counterargument in that this leads to a slightly larger scope and showing something that is quite trivial might allow developers to focus on the "other parts" (ensuring libraries installed correctly, configuration in Stytch is correct, etc...) which would be the fastest 0-to-1 way to approach a quickstart.</dd>
+<dd>Where I settled is that I agree with the magic login flow that Stytch currently uses for its quickstarts. It generates a good narrative for how to start at the beginning and improve the app incrementally: build a flow that represents a industry-approved signup flow, then iterate from there to make that login flow robust, then iterate more to everyday login flows for existing users like OpenID or passkeys: a series of pieces that takes people from nothing (the quickstart) through a story of a user signup to a full app built on Stytch.</dd>
+</dl>
+<hr>
+<h1>Getting Started: Python</h1>
+<h2>Overview:</h2>
+<p>In this guide we will illustrate inviting a user via an email address to an existing Organization. This flow has the effect of creating a new <a href="https://stytch.com/docs/b2b/api/member-object">Member</a> using Stytch's API and a Magic Link, and storing this Member's login credentials in the local browser session. This will simulate a common method for sending a user-friendly, passwordless, and secure invitation for a user to join the Organization and be logged in afterwards.</p>
+<p>Check out these guides for more background information about Stytch's <a href="https://stytch.com/docs/b2b/guides/multi-tenancy">data model</a> and <a href="https://stytch.com/docs/api/send-by-email">Magic Links</a> if you'd like more information about the models used in this tutorial.</p>
+<h2>Prerequisites:</h2>
+<p>To run this quickstart, we will need:</p>
+<ul>
+<li>An Organization that has been created in Stytch's <a href="https://stytch.com/dashboard/organizations?env=test">Organizations dashboard</a></li>
+<li>An email address to which to send the Magic Link. You will need to be able to receive and access emails at this address.</li>
+<li>A development environment in which to implement the flow - shown here using Python and Flask to communicate and shepherd the user through the flow.</li>
+</ul>
+<h2>Goals:</h2>
+<p>By the end of this quickstart, you will have learned how to:</p>
+<ul>
+<li>Set up a basic B2B Organization in Stytch</li>
+<li>Set up and run a Python / Flask application to integrate with Stytch's API</li>
+<li>Send an email inviting the user to an organization using a <a href="https://stytch.com/docs/b2b/guides/magic-links/overview">Magic Link</a></li>
+<li>Use Stytch's <a href="https://stytch.com/docs/b2b/guides/what-is-stytch-b2b-auth#discovery-authentication">Discovery Authentication flow</a> to implement a two-stage process of logging in a user.</li>
+<li>Have a working basic app to iterate on with your own business logic.</li>
+</ul>
+<h2>Implementation:</h2>
+<h4>Install Stytch SDK and configure your API Keys</h4>
+<p>Create a Stytch B2B Project in your <a href="https://stytch.com/dashboard">Stytch Dashboard</a>. At this stage it is sufficient to make your test organization permissive by only supplying the required "name" and "slug" fields and using the unset defaults for the other configuration fields. In production Stytch strongly recommends modifying your <a href="https://stytch.com/docs/b2b/guides/multi-tenancy#organization-settings">organization's settings</a> to configure security to your set of expected authorization flows.</p>
+<p>Install our Python SDK in your Flask environment:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>stytch
+</code></pre></div>
+
+<p>Configure your Stytch Project's API keys as environment variables in your development environment (these are located in your project details <a href="https://stytch.com/dashboard/project-settings?env=test">configuration dashboard</a>. We recommend using the Test configuration for your credentials (set in the Dashboard's menu at the top of the page):</p>
+<div class="highlight"><pre><span></span><code><span class="nv">STYTCH_PROJECT_ID</span><span class="o">=</span><span class="s2">&quot;YOUR_STYTCH_PROJECT_ID&quot;</span>
+<span class="nv">STYTCH_SECRET</span><span class="o">=</span><span class="s2">&quot;YOUR_STYTCH_PROJECT_SECRET&quot;</span>
+</code></pre></div>
+
+<p>Set up a basic app using the framework of your choice--we're using Python and Flask--and initialize the Stytch client with the environment variables you set in the previous step. </p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="n">Flask</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">redirect</span><span class="p">,</span><span class="w"> </span><span class="n">session</span><span class="p">,</span><span class="w"> </span><span class="n">jsonify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">stytch</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="n">B2BClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">stytch.core.response_base</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="n">StytchError</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span>
+
+<span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="c1"># Flask requests a secret key for session management.</span>
+<span class="c1"># As this is not production code, we&#39;ll use a random value.</span>
+<span class="n">app</span><span class="o">.</span><span class="n">secret_key</span><span class="o">=</span><span class="s2">&quot;1234567890abcdef&quot;</span>
+
+<span class="n">stytch_client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B2BClient</span><span class="p">(</span>
+<span class="w">        </span><span class="n">project_id</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;STYTCH_PROJECT_ID&#39;</span><span class="p">],</span>
+<span class="w">        </span><span class="n">secret</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;STYTCH_SECRET&#39;</span><span class="p">],</span>
+<span class="w">        </span><span class="n">environment</span><span class="o">=</span><span class="s2">&quot;test&quot;</span>
+<span class="w">        </span><span class="p">)</span><span class="w">  </span>
+
+<span class="k">if</span><span class="w"> </span><span class="vm">__name__</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="w">  </span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<p>At this point it should be possible to run the app without errors, although it doesn't do much yet.</p>
+<p>Let's start with a simple dashboard that allows us to see the state of whether we are logged in with some simple HTML, which helps us keep track of our app's state.</p>
+<p>For now, we're not logged in, so this route will simply state that fact when visited. After a successful authentication flow, this route will try to fetch a stored token from our Flask session data, authenticate it with Stytch, and print whether our app and Stytch agree that the user is authenticated in an organization.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/dashboard&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">dashboard</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a simple dashboard that tells us our logged-in state with some helpful links</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stytch_session</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;stytch_session_token&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">stytch_session</span><span class="p">:</span>
+        <span class="c1"># We&#39;re not logged in because we unset or never set a session at all. We should run the whole login flow.</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;p&gt;No active session. Please &lt;a href=&quot;/signup&quot;&gt;submit an email address&lt;/a&gt; to receive a magic link.&lt;/p&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Try to authenticate with the token we fetched from the session</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">session_token</span><span class="o">=</span><span class="n">stytch_session</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">StytchError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># If there is an error (such as server-expired authentication or session error), clear the session variable.</span>
+        <span class="c1"># This will have the effect of needing to fully re-login again.</span>
+        <span class="n">logout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">details</span><span class="p">))</span>
+
+    <span class="c1"># We have successfully logged in based on data stored in our session.</span>
+
+    <span class="c1"># Remember to reset the cookie session, as sessions.authenticate() will issue a new token on successful auth.</span>
+    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;stytch_session_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">session_token</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;p&gt;&lt;em&gt;</span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">email_address</span><span class="si">}</span><span class="s2">&lt;/em&gt; is currently logged into </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">organization</span><span class="o">.</span><span class="n">organization_name</span><span class="si">}</span><span class="s2">.&lt;p&gt;</span>
+<span class="s2">        &lt;p&gt;&lt;a href=&quot;/signup&quot;&gt;Submit another email&lt;/a&gt; to log in.&lt;/p&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+</code></pre></div>
+
+<p>While we're at it, let's implement the <code>logout</code> function by adding a simple route to delete the session token. Visiting this logout endpoint will discard the login state</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log out the user.</span>
+<span class="sd">    Simply pop the session token from the session so we&#39;ll have to reauthenticate.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;stytch_session_token&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;&quot;&lt;p&gt;Logged out.&lt;/p&gt;</span>
+<span class="s2">        &lt;p&gt;&lt;a href=&quot;/signup&quot;&gt;Submit another email&lt;/a&gt; to log in.&lt;/p&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+</code></pre></div>
+
+<p>Now that we have some helper functions to inspect and manage our app's state, it's time to implement the magic link flow.</p>
+<p>As a reminder, magic links with discovery flow work like this:</p>
+<ol>
+<li>We request a magic link from Stytch to be sent to a given email address.</li>
+<li>On receipt of this link, the user clicks the login button and is taken to Stytch to start the login flow. This represents a user intent to login.</li>
+<li>Stytch responds to this intent with a redirect to our app to continue the flow. Our app takes a token from the redirect parameters and begins a token exchange process.</li>
+<li>Using the Stytch discovery flow, we process the login request to create an intermediate session for the user, fetching a list of Organizations for which the user can login.</li>
+<li>Based on app business logic or user input, we select one of these organizations and exchange it, and the intermediate session token, for a full session.</li>
+</ol>
+<p>The user is now logged in to the given Organization.</p>
+<p>Magic link authentication works best where we trust a user is authentic where access to their email account vouches for their identity. Logging in this way can be cumbersome for everyday login flows, but is a quite common method for sending "password reset" emails or emails for the initial signup process, which is what we'll simulate here.</p>
+<p>We use a very basic no-frills form for this purpose:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/signup&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">sign_up</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Render a simple form for the user to start the signup/login flow in their browser</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;form action=&quot;/request_magic_link&quot; method=&quot;post&quot;&gt;</span>
+<span class="s2">        &lt;p&gt;&lt;label for=&quot;email&quot;&gt;Please enter an email address to send a magic link to: &lt;/label&gt;&lt;/p&gt;</span>
+<span class="s2">        &lt;p&gt;&lt;input type=&quot;email&quot; id=&quot;email&quot; name=&quot;email&quot;/&gt;&lt;input type=&quot;submit&quot; value=&quot;Send magic link&quot;/&gt;&lt;/p&gt;</span>
+<span class="s2">    &lt;/form&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+</code></pre></div>
+
+<p>Upon submission of this form, the browser sends the form data via POST to the /request_magic_link endpoint in our app which begins the authentication flow.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/request_magic_link&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">request_magic_link</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start the magic link flow.</span>
+<span class="sd">    Here we are using the discovery flow to log the user in; later we will check what organizations</span>
+<span class="sd">    are available for them to log into.</span>
+<span class="sd">    This method is the target of the POST request sent by submitting the form on the `/signup` page.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">magic_links</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">discovery</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="n">email_address</span><span class="o">=</span><span class="n">email</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">is_success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;h1&gt;Success!&lt;/h1&gt;</span>
+<span class="s2">            &lt;p&gt;You should soon receive an email request to log in at </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&lt;/p&gt;</span>
+<span class="s2">            &lt;p&gt;More info: response: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="si">}</span><span class="s2">&lt;/p&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+    <span class="k">except</span> <span class="n">StytchError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">details</span><span class="p">))</span>
+</code></pre></div>
+
+<p>Upon success of this route, Stytch will send an email to the user asking them to log in.</p>
+<p>Some short time later, when the user clicks the link, Stytch will continue the flow and send a redirect to our app. Here our app will exchange the token to create the intermediate session, choose a user-visible Organization to log into (for now, simply the first one), and perfom another exchange request with the intermediate token and our selected organization to create our session.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/authenticate&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">authenticate</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the Stytch-default route to redirect the user&#39;s browser to after Stytch validates and </span>
+<span class="sd">    checks authorization.</span>
+<span class="sd">    (https://stytch.com/dashboard/redirect-urls?env=test)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">token_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;stytch_token_type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># This redirect URL can be used for several different auth flows.</span>
+    <span class="c1"># There is a distinct token_type included from Stytch for each auth flow</span>
+    <span class="c1"># and it is a good practice to check this field to ensure you know which authenticate() method to use</span>
+    <span class="k">if</span> <span class="n">token_type</span> <span class="o">!=</span> <span class="s1">&#39;discovery&#39;</span><span class="p">:</span>
+      <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;token_type: </span><span class="si">{</span><span class="n">token_type</span><span class="si">}</span><span class="s2"> not supported&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Discover which Organizations are valid for logging in this user</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">magic_links</span><span class="o">.</span><span class="n">discovery</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span>
+            <span class="n">discovery_magic_links_token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="n">StytchError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">details</span><span class="p">))</span>
+
+    <span class="c1"># Sessions are based on Memberships, but we don&#39;t yet know which organization to choose</span>
+    <span class="c1"># for this user. The intermediate session token is valid for the half-session of only the</span>
+    <span class="c1"># user data model that we have so far.</span>
+    <span class="n">ist</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">intermediate_session_token</span>
+    <span class="n">discovered_orgs</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">discovered_organizations</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">discovered_orgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="c1"># email belongs to &gt;= 1 organization, simply log into the first one for this example.</span>
+      <span class="c1"># It may be more elegant, for users who belong in multiple Organizations, to display a choice to the</span>
+      <span class="c1"># user to select which organization to login to.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">stytch_client</span><span class="o">.</span><span class="n">discovery</span><span class="o">.</span><span class="n">intermediate_sessions</span><span class="o">.</span><span class="n">exchange</span><span class="p">(</span>
+                    <span class="n">intermediate_session_token</span><span class="o">=</span><span class="n">ist</span><span class="p">,</span>
+                    <span class="n">organization_id</span><span class="o">=</span><span class="n">discovered_orgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">organization</span><span class="o">.</span><span class="n">organization_id</span><span class="p">,</span>
+                    <span class="p">)</span>
+        <span class="k">except</span> <span class="n">StytchError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">details</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># There are no discoverable / visible orgs to this user.</span>
+      <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;h1&gt;Action needed:&lt;/h1&gt;</span>
+<span class="s2">        &lt;p&gt;&lt;em&gt;Stytch was unable to locate any valid organizations for this user to join.&lt;/em&gt;&lt;/p&gt;</span>
+<span class="s2">        &lt;p&gt;Please double check the &lt;a href=&quot;https://stytch.com/dashboard/organizations?env=test&quot;&gt;Organizations&lt;/a&gt; configuration for your account.&lt;/p&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="c1"># We made it to having a succesful response. Store the returned token in our session data.</span>
+    <span class="n">session</span><span class="p">[</span><span class="s1">&#39;stytch_session_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">session_token</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;h1&gt;Success!&lt;/h1&gt;</span>
+<span class="s2">    &lt;p&gt;You are logged in as </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">email_address</span><span class="si">}</span><span class="s2">&gt;&lt;/p&gt;</span>
+<span class="s2">    &lt;a href=&#39;/dashboard&#39;&gt;Go to dashboard&lt;/a&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+</code></pre></div>
+
+<p>That completes the flow! At this point Stytch and our app agree that the user is logged in to a particular organization. Going to our dashboard route should now show our status as logged in.</p>
+<p>Next steps:</p>
+<p>Keep in mind that this example app uses some shortcuts, is built for the test environment, and only programs defensively for a few common errors. For more information how to extend this example, review the rest of Stytch's documents and follow best practices for configuring, and maintaining the security of, your application.</p>
+<ul>
+<li>Configure the Organization settings to limit users who can be added by, for example, whitelisting email domains</li>
+<li>Present a webpage with options for the Member to choose which organization to log into</li>
+<li>Adjust your redirect URL to point to a web server that clients can access over the Internet</li>
+</ul>
+<p>Read more:</p>
+<p>Full code:</p></div>
+	</div>
+		<footer>
+		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>
+		  <p>&copy; Matt Bramlage</p>
+		</footer>
+	  </div>
+
+	</div>
+</body>
+</html>
