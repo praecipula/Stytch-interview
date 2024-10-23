@@ -1,6 +1,6 @@
 AUTHOR = 'Matt Bramlage'
 SITENAME = 'Stytch Getting Started'
-SITEURL = "https://praecipula.github.io/Stytch-interview/"
+SITEURL = "https://praecipula.github.io/Stytch-interview"
 
 PATH = "content"
 OUTPUT_PATH = "docs"
