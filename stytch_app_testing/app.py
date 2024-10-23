@@ -24,9 +24,8 @@ def sign_up():
 
     return """
     <form action="/request_magic_link" method="post">
-        <label for="email">Please enter an email address to send a magic link to: </label>
-        <input type="email" id="email" name="email"/>
-        <input type="submit" value="Send magic link"/>
+        <p><label for="email">Please enter an email address to send a magic link to: </label></p>
+        <p><input type="email" id="email" name="email"/><input type="submit" value="Send magic link"/></p>
     </form>
     """
 
@@ -64,7 +63,7 @@ def authenticate():
 
     # This redirect URL can be used for several different auth flows.
     # There is a distinct token_type included from Stytch for each auth flow
-    # so you know which authenticate() method to use
+    # and it is a good practice to check this field to ensure you know which authenticate() method to use
     if token_type != 'discovery':
       return f"token_type: {token_type} not supported"
 
@@ -81,22 +80,24 @@ def authenticate():
     # user data model that we have so far.
     ist = resp.intermediate_session_token
     discovered_orgs = resp.discovered_organizations
-    if len(discovered_orgs):
-      # email belongs to >= 1 organization, simply log into the first one for this example
+    if len(discovered_orgs) > 0:
+      # email belongs to >= 1 organization, simply log into the first one for this example.
+      # It may be more elegant, for users who belong in multiple Organizations, to display a choice to the
+      # user to select which organization to login to.
         try:
             response = stytch_client.discovery.intermediate_sessions.exchange(
                     intermediate_session_token=ist,
                     organization_id=discovered_orgs[0].organization.organization_id,
                     )
         except StytchError as e:
-            return e.details
-    else:
+            return jsonify(dict(e.details))
+    else: # There are no discoverable / visible orgs to this user.
       return f"""<h1>Action needed:</h1>
         <p><em>Stytch was unable to locate any valid organizations for this user to join.</em></p>
         <p>Please double check the <a href="https://stytch.com/dashboard/organizations?env=test">Organizations</a> configuration for your account.</p>
         """
 
-# Store the returned session in cookies
+    # We made it to having a succesful response. Store the returned token in our session data.
     session['stytch_session_token'] = resp.session_token
     return f"""
     <h1>Success!</h1>
@@ -127,7 +128,7 @@ def dashboard():
 
     # We have successfully logged in based on data stored in our session.
 
-    # Remember to reset the cookie session, as sessions.authenticate() will issue a new token on successful auth.
+    # Remember to reset the session token, as sessions.authenticate() will issue a new token on successful auth.
     session['stytch_session_token'] = resp.session_token
     return f"""
         <p><em>{resp.member.email_address}</em> is currently logged into {resp.organization.organization_name}.<p>
